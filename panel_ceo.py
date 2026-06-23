@@ -16,25 +16,24 @@ query_params = st.query_params
 if "api_action" in query_params:
     accion = query_params["api_action"]
     
-    # 💳 Caso 1: Netlify pide la Firma de Integridad para procesar un pago
+    # 💳 Caso 1: Firma Wompi
     if accion == "firma-wompi":
         try:
             referencia = query_params.get("reference", "")
             monto = query_params.get("amountInCents", "")
             moneda = query_params.get("currency", "COP")
             
-            # Algoritmo matemático estricto de Wompi
             cadena_firma = f"{referencia}{monto}{moneda}{WOMPI_INTEGRITY_SECRET}"
             signature = hashlib.sha256(cadena_firma.encode('utf-8')).hexdigest()
             
-            # Respondemos texto plano JSON a Netlify y cortamos el script de inmediato
-            st.text(json.dumps({"signature": signature}))
+            # Formato JSON limpio que el navegador acepta sin chistar
+            st.code(json.dumps({"signature": signature}), language="json")
             st.stop()  
         except Exception as e:
-            st.text(json.dumps({"error": str(e)}))
+            st.code(json.dumps({"error": str(e)}), language="json")
             st.stop()
 
-    # 🤖 Caso 2: El usuario en la Landing escribe en el Chatbot e interactúa con Claude
+    # 🤖 Caso 2: Chatbot IA
     elif accion == "chat":
         try:
             mensaje_usuario = query_params.get("message", "")
@@ -61,12 +60,13 @@ if "api_action" in query_params:
             )
             
             bot_reply = response.json()["content"][0]["text"] if response.status_code == 200 else "Disculpa, tengo intermitencia en mi núcleo de IA. Inténtalo de nuevo."
-            st.text(json.dumps({"reply": bot_reply}))
-            st.stop()  # Cortamos el script para que no cargue la interfaz visual
+            
+            # Respondemos usando st.code para que el navegador no lo bloquee por políticas de texto plano
+            st.code(json.dumps({"reply": bot_reply}), language="json")
+            st.stop()  
         except Exception as e:
-            st.text(json.dumps({"reply": "Error de conexión con el servidor cloud."}))
+            st.code(json.dumps({"reply": "Error de conexión con el servidor cloud."}), language="json")
             st.stop()
-
 # ==============================================================================
 # ABAJO DE ESTO QUEDA TU CÓDIGO ORIGINAL INTACTO:
 # st.markdown("""<!DOCTYPE html>...""")
