@@ -62,10 +62,10 @@ if "api_action" in query_params:
             bot_reply = response.json()["content"][0]["text"] if response.status_code == 200 else "Disculpa, tengo intermitencia en mi núcleo de IA. Inténtalo de nuevo."
             
             # Respondemos usando st.code para que el navegador no lo bloquee por políticas de texto plano
-            st.code(json.dumps({"reply": bot_reply}), language="json")
+            st.text(json.dumps({"reply": bot_reply}), language="json")
             st.stop()  
         except Exception as e:
-            st.code(json.dumps({"reply": "Error de conexión con el servidor cloud."}), language="json")
+            st.text(json.dumps({"reply": "Error de conexión con el servidor cloud."}), language="json")
             st.stop()
 # ==============================================================================
 # ABAJO DE ESTO QUEDA TU CÓDIGO ORIGINAL INTACTO:
