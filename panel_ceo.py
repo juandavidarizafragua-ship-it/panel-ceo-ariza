@@ -1,5 +1,7 @@
 import streamlit as st
 import requests
+import hashlib
+import json
 from datetime import datetime, date
 # ==============================================================================
 # 🔥 ENDPOINT NATIVO ULTRA-LIGHT PARA LANDING (NETLIFY)
