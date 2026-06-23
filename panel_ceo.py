@@ -61,11 +61,21 @@ if "api_action" in query_params:
             
             bot_reply = response.json()["content"][0]["text"] if response.status_code == 200 else "Disculpa, tengo intermitencia en mi núcleo de IA. Inténtalo de nuevo."
             
-            # Respondemos usando st.code para que el navegador no lo bloquee por políticas de texto plano
-            st.text(json.dumps({"reply": bot_reply}), language="json")
+            # 💡 El truco maestro: Respondemos con un HTML que le manda el JSON a tu Landing
+            html_bypasser = f"""
+            <script>
+                window.parent.postMessage({json.dumps({"reply": bot_reply})}, "https://agencia-ariza.netlify.app");
+            </script>
+            """
+            st.components.v1.html(html_bypasser, height=0)
             st.stop()  
         except Exception as e:
-            st.text(json.dumps({"reply": "Error de conexión con el servidor cloud."}), language="json")
+            html_error = """
+            <script>
+                window.parent.postMessage({"reply": "Error de conexión en la nube."}, "https://agencia-ariza.netlify.app");
+            </script>
+            """
+            st.components.v1.html(html_error, height=0)
             st.stop()
 # ==============================================================================
 # ABAJO DE ESTO QUEDA TU CÓDIGO ORIGINAL INTACTO:
